@@ -18,7 +18,20 @@ impl Context {
         })
     }
 
-    /// Осуществляет подключение к базе данных.
+    /// Создание новой файловой базы данных с обновлением конфига.
+    pub async fn create_database(&mut self, name_database: &str) -> anyhow::Result<()> {
+        self.sql_state.create_database(&mut self.config_db, name_database).await?;
+        Ok(())
+    }
+
+    /// Создание новой файловой базы данных с обновлением конфига.
+    /// С автоматическим подключением.
+    pub async fn create_database_and_autoconnect(&mut self, name_database: &str) -> anyhow::Result<()> {
+        self.sql_state.create_database_and_connect(&mut self.config_db, name_database).await?;
+        Ok(())
+    }
+
+    /// Осуществляет подключение к базе данных по имени.
     pub async fn connect_database(&mut self, name_database: &str) -> anyhow::Result<()> {
         self.config_db.select_database(name_database).await?;
 
