@@ -1,4 +1,7 @@
-use crate::{config::db::{ConfigDataBase, MetadataDataBase}, sql::SqlState};
+use crate::{
+    config::db::{ConfigDataBase, MetadataDataBase},
+    sql::SqlState,
+};
 
 /// The `Context' is the central structure for interacting with the backend of the main functionality.
 #[derive(Debug)]
