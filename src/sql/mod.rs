@@ -1,6 +1,4 @@
-use sqlx::{Connection, SqliteConnection};
-
-use crate::config::db::{ConfigDataBase, MetadataDataBase};
+use crate::config::db::MetadataDataBase;
 
 #[derive(Debug)]
 pub(crate) struct SqlState {
