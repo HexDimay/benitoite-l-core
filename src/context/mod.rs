@@ -6,7 +6,7 @@ use crate::{
 /// The `Context' is the central structure for interacting with the backend of the main functionality.
 #[derive(Debug)]
 pub struct Context {
-    config_db: ConfigDataBase,
+    pub config_db: ConfigDataBase,
     sql_state: SqlState,
 }
 
@@ -20,14 +20,17 @@ impl Context {
 
     /// Создание новой файловой базы данных с обновлением конфига.
     pub async fn create_database(&mut self, name_database: &str) -> anyhow::Result<()> {
-        self.sql_state.create_database(&mut self.config_db, name_database).await?;
+        self.sql_state.create_database(name_database).await?;
+        self.config_db.scan_databases().await?;
+
         Ok(())
     }
 
     /// Создание новой файловой базы данных с обновлением конфига.
     /// С автоматическим подключением.
     pub async fn create_database_and_autoconnect(&mut self, name_database: &str) -> anyhow::Result<()> {
-        self.sql_state.create_database_and_connect(&mut self.config_db, name_database).await?;
+        self.create_database(name_database).await?;
+        self.connect_database(name_database).await?;
         Ok(())
     }
 
