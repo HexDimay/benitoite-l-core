@@ -8,9 +8,15 @@ pub struct SqlState {
 }
 
 impl SqlState {
+    pub fn new() -> Self {
+        Self {
+            sqlite_connection: None,
+        }
+    }
+
     /// Осуществляет слединение с базой данных.
     /// Если SQL уже подключён, он отключается от базы данных и подключается к указанной базе данных.
-    pub async fn connect(&mut self, select_db: MetadataDataBase) -> anyhow::Result<()> {
+    pub async fn connect(&mut self, select_db: &MetadataDataBase) -> anyhow::Result<()> {
         if let Some(_) = &self.sqlite_connection {
             self.clouse().await?;
         }
