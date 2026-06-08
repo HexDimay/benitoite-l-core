@@ -8,9 +8,12 @@ rust-version = "1.95.0"
 readme = "README.md"
 license = "Apache-2.0"
 
+[features]
+log = ["dep:log"]
+
 [dependencies]
 anyhow = "1.0.102"
-log = "0.4.32"
+log = { version = "0.4.32", optional = true }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.150"
 async-std = "1.13.2"

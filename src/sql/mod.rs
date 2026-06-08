@@ -23,8 +23,12 @@ impl SqlState {
 
         let connection =
             sqlx::SqliteConnection::connect(&select_db.path().to_string_lossy()).await?;
+
+        #[cfg(feature = "log")]
         log::info!("Connected database: {}", select_db.name());
+
         self.sqlite_connection = Some(connection);
+
         Ok(())
     }
 
@@ -32,6 +36,8 @@ impl SqlState {
     pub async fn clouse(&mut self) -> anyhow::Result<()> {
         if let Some(c) = std::mem::take(&mut self.sqlite_connection) {
             c.close().await?;
+
+            #[cfg(feature = "log")]
             log::info!("Closing the database connection.");
         }
 

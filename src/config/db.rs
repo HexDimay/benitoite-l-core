@@ -13,11 +13,13 @@ pub struct ConfigDataBase {
 
 impl ConfigDataBase {
     pub async fn new() -> anyhow::Result<Self> {
+        #[cfg(feature = "log")]
         log::info!("Init config for ListDataBase");
 
         match async_std::fs::read_to_string(PATH_CONFIG).await {
             Ok(content) => Ok(serde_json::from_str(&content)?),
             Err(e) if e.kind() == async_std::io::ErrorKind::NotFound => {
+                #[cfg(feature = "log")]
                 log::warn!("File of cfg is not found");
 
                 let mut config = Self {
@@ -28,8 +30,11 @@ impl ConfigDataBase {
                     .await
                     .context("Failed to write default config")?;
 
-                log::info!("Creating config for ListDataBase");
-                log::info!("Auto scan db.");
+                #[cfg(feature = "log")]
+                {
+                    log::info!("Creating config for ListDataBase");
+                    log::info!("Auto scan db.");
+                }
 
                 config.scan_databases().await?;
 
@@ -72,7 +77,10 @@ impl ConfigDataBase {
             if entry.file_type().await?.is_file() && entry.path().extension() == Some("db".as_ref())
             {
                 let name = entry.file_name().into_string().unwrap_or_default();
+
+                #[cfg(feature = "log")]
                 log::info!("Database found: {}", name.clone());
+
                 self.list_db.push(MetadataDataBase::new(
                     name,
                     PathBuf::from(entry.path().as_os_str()),
@@ -80,6 +88,7 @@ impl ConfigDataBase {
             }
         }
 
+        #[cfg(feature = "log")]
         if self.list_db.is_empty() {
             log::info!("No databases were found.");
         }

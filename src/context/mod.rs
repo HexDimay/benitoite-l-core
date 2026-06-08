@@ -24,7 +24,10 @@ impl Context {
 
         match self.config_db.get_current_database() {
             Some(meta_db) => self.sql_state.connect(meta_db).await?,
-            None => log::error!("Failed to connect to the database: {}", name_database),
+            None => {
+                #[cfg(feature = "log")]
+                log::error!("Failed to connect to the database: {}", name_database)
+            }
         }
 
         Ok(())
