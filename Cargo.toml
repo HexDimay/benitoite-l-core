@@ -18,6 +18,7 @@ serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.150"
 async-std = "1.13.2"
 sqlx = { version = "0.9", features = [ "runtime-async-std", "sqlite" ] }
+url = "2.5.8"
 
 [dev-dependencies]
 env_logger = "0.11.10"

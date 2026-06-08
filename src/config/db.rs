@@ -1,6 +1,7 @@
 use anyhow::Context;
 use async_std::stream::StreamExt;
 use serde::{Deserialize, Serialize};
+use url::Url;
 use std::path::{Path, PathBuf};
 
 pub const PATH_CONFIG: &'static str = "./config_list_database.cfg";
@@ -118,8 +119,15 @@ impl MetadataDataBase {
     pub fn name(&self) -> &str {
         &self.name
     }
+
     pub fn path(&self) -> &Path {
         &self.path_db
+    }
+
+    pub fn sql_path(&self) -> String {
+        let path_str = self.path().to_str().expect("Non-UTF8 path");
+        let url = Url::parse(&format!("sqlite:///{}", path_str)).expect("Invalid path");
+        url.to_string()
     }
 }
 

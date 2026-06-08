@@ -4,7 +4,7 @@ use crate::config::db::{ConfigDataBase, MetadataDataBase};
 
 #[derive(Debug)]
 pub struct SqlState {
-    sqlite_connection: Option<SqliteConnection>,
+    sqlite_connection: Option<sqlx::sqlite::SqlitePool>,
 }
 
 impl SqlState {
@@ -47,7 +47,10 @@ impl SqlState {
         }
 
         let connection =
-            sqlx::SqliteConnection::connect(&select_db.path().to_string_lossy()).await?;
+            sqlx::sqlite::SqlitePoolOptions::new()
+                .max_connections(5)
+                .connect(&select_db.sql_path())
+                .await?;
 
         #[cfg(feature = "log")]
         log::info!("Connected database: {}", select_db.name());
@@ -60,7 +63,7 @@ impl SqlState {
     /// Осуществляет выход и закрытие базы данных.
     pub async fn close(&mut self) -> anyhow::Result<()> {
         if let Some(c) = std::mem::take(&mut self.sqlite_connection) {
-            c.close().await?;
+            c.close().await;
 
             #[cfg(feature = "log")]
             log::info!("Closing the database connection.");
