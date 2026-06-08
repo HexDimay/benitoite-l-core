@@ -1,7 +1,7 @@
 use anyhow::Context;
 use async_std::stream::StreamExt;
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 pub const PATH_CONFIG: &'static str = "./config_list_database.cfg";
 
@@ -118,7 +118,7 @@ impl MetadataDataBase {
     pub fn name(&self) -> &str {
         &self.name
     }
-    pub fn path(&self) -> &PathBuf {
+    pub fn path(&self) -> &Path {
         &self.path_db
     }
 }

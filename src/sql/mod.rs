@@ -1,6 +1,6 @@
 use sqlx::{Connection, SqliteConnection};
 
-use crate::config::db::MetadataDataBase;
+use crate::config::db::{ConfigDataBase, MetadataDataBase};
 
 #[derive(Debug)]
 pub struct SqlState {
@@ -15,7 +15,7 @@ impl SqlState {
     }
 
     /// Создание файла базы данных в корневой директории и обновление конфига.
-    pub async fn create_database(&self, config: &mut crate::config::db::ConfigDataBase, name_db: &str) -> anyhow::Result<()> {
+    pub async fn create_database(&self, config: &mut ConfigDataBase, name_db: &str) -> anyhow::Result<()> {
         async_std::fs::write(format!("./{}.db", name_db), "").await?;
         config.scan_databases().await?;
 
@@ -23,7 +23,7 @@ impl SqlState {
     }
 
     /// Создание файла базы данных в корневой директории и автоматический выбор базы данных (подключение) с обновлением конфигурации.
-    pub async fn create_database_and_connect(&mut self, config: &mut crate::config::db::ConfigDataBase, name_db: &str) -> anyhow::Result<()> {
+    pub async fn create_database_and_connect(&mut self, config: &mut ConfigDataBase, name_db: &str) -> anyhow::Result<()> {
         self.create_database(config, name_db).await?;
 
         config.select_database(name_db).await?;
@@ -43,7 +43,7 @@ impl SqlState {
     /// Если SQL уже подключён, он отключается от базы данных и подключается к указанной базе данных.
     pub async fn connect(&mut self, select_db: &MetadataDataBase) -> anyhow::Result<()> {
         if let Some(_) = &self.sqlite_connection {
-            self.clouse().await?;
+            self.close().await?;
         }
 
         let connection =
@@ -58,7 +58,7 @@ impl SqlState {
     }
 
     /// Осуществляет выход и закрытие базы данных.
-    pub async fn clouse(&mut self) -> anyhow::Result<()> {
+    pub async fn close(&mut self) -> anyhow::Result<()> {
         if let Some(c) = std::mem::take(&mut self.sqlite_connection) {
             c.close().await?;
 
